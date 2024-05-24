@@ -4,7 +4,7 @@ import tkinter
 from tkinter import messagebox
 import subprocess
 
-def tkinter_message_box(title, message, type="info", yes_no=False):
+def show_message_box(title, message, type="info", yes_no=False):
     root = tkinter.Tk()
     root.withdraw()
     if type == "info":
@@ -15,20 +15,20 @@ def tkinter_message_box(title, message, type="info", yes_no=False):
         return messagebox.askyesno(title, message)
     return None
 
-def is_venv():
+def is_virtual_environment():
     if sys.prefix != sys.base_prefix:
         return True
     else:
-        tkinter_message_box("No Virtual Environment", "Must create and activate a virtual environment before running this script.  Please see the instructions on the Github page for more details.", type="error")
+        show_message_box("No Virtual Environment", "Create and activate a virtual environment before running this script. Refer to the Github page for instructions.", type="error")
         sys.exit(0)
 
-def check_python_version_and_confirm():
+def check_python_version():
     major, minor = map(int, sys.version.split()[0].split('.')[:2])
     if major < 3 or (major == 3 and minor < 10):
-        tkinter_message_box("Python Version Error", "This program is currently only compatible with Python 3.10 or 3.11.", type="error")
+        show_message_box("Python Version Error", "This program is compatible with Python 3.10 or 3.11 only.", type="error")
         sys.exit(0)
     elif major == 3 and (minor == 12 or minor > 12):
-        tkinter_message_box("Python Version Error", "Python 3.12+ detected. PyTorch is not currently compatible with Python 3.12 - exiting installer.", type="error")
+        show_message_box("Python Version Error", "Python 3.12+ detected. PyTorch is not compatible with Python 3.12.", type="error")
         sys.exit(0)
     else:
         return True
@@ -41,16 +41,16 @@ def check_cuda_version():
             major, minor = cuda_version.split('.')[:2]
             cuda_version_num = float(f"{major}.{minor}")
             if cuda_version_num < 12.1:
-                tkinter_message_box("CUDA Check", f"Incorrect version of CUDA installed (Version: {cuda_version_num}). Please install CUDA 12.1+.  Exiting the installer.", type="error")
+                show_message_box("CUDA Check", f"Incorrect CUDA version installed (Version: {cuda_version_num}). Install CUDA 12.1+. Exiting installer.", type="error")
                 sys.exit(0)
             else:
-                tkinter_message_box("CUDA Check", f"CUDA version {cuda_version_num} detected. Proceeding with the GPU-accelerated installation.", type="info")
+                show_message_box("CUDA Check", f"CUDA version {cuda_version_num} detected. Proceeding with GPU-accelerated installation.", type="info")
                 return cuda_version_num
         else:
-            tkinter_message_box("CUDA Check", "Unable to determine CUDA version. Exiting the installer.", type="error")
+            show_message_box("CUDA Check", "Unable to determine CUDA version. Exiting installer.", type="error")
             sys.exit(0)
     except FileNotFoundError:
-        tkinter_message_box("CUDA Check", "No CUDA installation detected. Exiting the installer.", type="error")
+        show_message_box("CUDA Check", "No CUDA installation detected. Exiting installer.", type="error")
         sys.exit(0)
 
 def install_pytorch(cuda_version_num):
@@ -69,8 +69,8 @@ def install_pytorch(cuda_version_num):
             os.system(f"{sys.executable} -m pip install https://download.pytorch.org/whl/cpu/torch-2.2.0%2Bcpu-cp310-cp310-win_amd64.whl#sha256=15a657038eea92ac5db6ab97b30bd4b5345741b49553b2a7e552e80001297124")
 
 def main():
-    is_venv()
-    check_python_version_and_confirm()
+    is_virtual_environment()
+    check_python_version()
     cuda_version_num = check_cuda_version()
     os.system(f"{sys.executable} -m pip install --upgrade pip")
     os.system(f"{sys.executable} -m pip install -r requirements.txt")
