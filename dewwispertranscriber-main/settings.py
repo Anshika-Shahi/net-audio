@@ -1,4 +1,6 @@
-from PySide6.QtWidgets import (QGroupBox, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QSlider)
+from PySide6.QtWidgets import (
+    QGroupBox, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QSlider
+)
 from PySide6.QtCore import Qt
 from utilities import get_supported_quantizations
 
