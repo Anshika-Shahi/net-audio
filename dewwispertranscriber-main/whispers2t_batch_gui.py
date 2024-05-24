@@ -3,12 +3,12 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QCheckBox, QLabel, QGroupBox, QMessageBox
 from PySide6.QtCore import Qt
 import torch    
-from utilities import get_compute_and_platform_info
+from utilities import get_available_devices
 from whispers2t_batch_transcriber import Worker
 from metrics_bar import MetricsBar
 from settings import SettingsGroupBox
 
-def is_nvidia_gpu_available():
+def is_gpu_available():
     return torch.cuda.is_available() and "nvidia" in torch.cuda.get_device_name(0).lower()
 
 class MainWindow(QWidget):
@@ -17,8 +17,8 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("chintellalaw.com - for non-commercial use")
-        initial_height = 400 if is_nvidia_gpu_available() else 370
+        self.setWindowTitle("Whispers2T Batch Transcriber")
+        initial_height = 400 if is_gpu_available() else 370
         self.setGeometry(100, 100, 680, initial_height)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
@@ -51,7 +51,7 @@ class MainWindow(QWidget):
         fileExtensionsGroupBox.setLayout(fileExtensionsLayout)
         main_layout.addWidget(fileExtensionsGroupBox)
 
-        self.settingsGroupBox = SettingsGroupBox(get_compute_and_platform_info, self)
+        self.settingsGroupBox = SettingsGroupBox(get_available_devices, self)
         main_layout.addWidget(self.settingsGroupBox)
 
         selectDirLayout = QHBoxLayout()
